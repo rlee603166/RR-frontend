@@ -16,21 +16,7 @@ function Playground({ setPlayground }) {
 
     let rory_url = "http://127.0.0.1:5000/get-rory";
 
-    //     try {
-    //         await new Promise(resolve => setTimeout(resolve, 100));
-    //         const rory_data = roryData.prediction;
-    //         setRoryGifData(rory_data);
-    //         setRoryGifDuration(rory_data.back_kps.length - 1);
-    //     } catch (error) {
-    //         console.error("Error loading data:", error);
-    //     } finally {
-    //         setRoryLoading(false);
-    //         console.log(roryLoading);
-    //     }
-    // };
-
     useEffect(() => {
-        // Check if window is defined (only run in browser environment)
         if (typeof window !== "undefined") {
             const handleResize = () => {
                 setDimensions({
@@ -39,10 +25,8 @@ function Playground({ setPlayground }) {
                 });
             };
 
-            // Add the event listener
             window.addEventListener("resize", handleResize);
 
-            // Cleanup function to remove the event listener
             return () => {
                 window.removeEventListener("resize", handleResize);
             };

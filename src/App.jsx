@@ -48,13 +48,13 @@ function App() {
         !fetchAble ? (
           <>
             <Landing setPlayground={setPlayground} />
-            <Upload 
+            {/* <Upload 
               setProcessID={setProcessID} 
               setDifference={setDifference}
               setBackVideo={setBackVideo}
               setFrontVideo={setFrontVideo}
               setFetchAble={setFetchAble}
-            />
+            /> */}
           </>
         ) : (
           <PoseView 

@@ -13,7 +13,6 @@ function SwingView({
     difference,
     isPlayground,
 }) {
-    // Refs
     const mountRef = useRef(null);
     const cameraRef = useRef(null);
     const rendererRef = useRef(null);
@@ -23,7 +22,6 @@ function SwingView({
     const videoRefFront = useRef(null);
     const videoRefBack = useRef(null);
 
-    // State
     const [gif, setGif] = useState(null);
     const [currFrontKps, setCurrFrontKps] = useState([]);
     const [currBackKps, setCurrBackKps] = useState([]);
@@ -32,7 +30,6 @@ function SwingView({
     const [videoFrontDuration, setVideoFrontDuration] = useState(0);
     const [roryLoading, setRoryLoading] = useState(null);
 
-    // Constants
     const scaleFactor = 3;
     const edges = [
         [0, 1],
@@ -55,7 +52,6 @@ function SwingView({
         [14, 16],
     ];
 
-    // Data fetching
     const fetchRory = async () => {
         setRoryLoading(true);
         try {
@@ -78,7 +74,6 @@ function SwingView({
         }
     };
 
-    // Three.js setup functions
     const initLights = scene => {
         const hemiLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 3);
         hemiLight.position.set(0, 20, 0);
@@ -104,7 +99,6 @@ function SwingView({
     const initScene = () => {
         if (!mountRef.current) return;
 
-        // Cleanup existing renderer
         if (rendererRef.current) {
             const existingCanvas = mountRef.current.querySelector("canvas");
             if (existingCanvas) {
@@ -112,24 +106,21 @@ function SwingView({
             }
             rendererRef.current.dispose();
             rendererRef.current.forceContextLoss();
-            rendererRef.current = null; // Clear the ref
-        } // Scene setup
+            rendererRef.current = null; 
+        } 
 
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xa0a0a0);
         scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
 
-        // Camera setup
         const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         camera.position.set(0, 0.5, 1.5);
         cameraRef.current = camera;
 
-        // Renderer setup
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(width - 50, height - 50);
         mountRef.current.appendChild(renderer.domElement);
 
-        // Controls setup
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.addEventListener("change", () => renderer.render(scene, camera));
         controls.target.set(0, 0.5, 0);
@@ -138,15 +129,12 @@ function SwingView({
         controls.enablePan = false;
         controls.enableZoom = true;
 
-        // Add lights and grid
         initLights(scene);
         initGrid(scene);
 
-        // Store refs
         rendererRef.current = renderer;
         sceneRef.current = scene;
 
-        // Animation loop
         const animate = () => {
             requestAnimationFrame(animate);
             controls.update();
@@ -241,11 +229,9 @@ function SwingView({
             const renderer = rendererRef.current;
             const camera = cameraRef.current;
 
-            // Update camera aspect ratio
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
 
-            // Resize renderer
             renderer.setSize(width, height);
         }
     }, [width, height, isLoading]);
@@ -257,13 +243,34 @@ function SwingView({
         }
     }, [frameIndex]);
 
+    useEffect(() => {
+        if (videoRefFront.current && videoRefBack.current) {
+            videoRefFront.current.load();
+            videoRefBack.current.load();
+            videoRefFront.current.onloadedmetadata = () => {
+                setVideoFrontDuration(videoRefFront.current.duration);
+            };
+            
+            videoRefFront.current.oncanplaythrough = () => {
+            };
+            videoRefBack.current.oncanplaythrough = () => {
+            };
+        }
+    }, [videoFront, videoBack]);
+
     const handleSliderChange = e => {
         const frame = parseFloat(e.target.value);
         setFrameIndex(frame);
         const userTime = (frame / gifDuration) * videoFrontDuration;
 
-        videoRefFront.current.currentTime = userTime;
-        videoRefBack.current.currentTime = userTime - difference;
+        const clampedTime = Math.min(Math.max(0, userTime), videoFrontDuration);
+    
+        try {
+            videoRefFront.current.currentTime = clampedTime;
+            videoRefBack.current.currentTime = Math.max(0, clampedTime - difference);
+        } catch (error) {
+            console.error('Error updating video time:', error);
+        }
     };
 
     return (
