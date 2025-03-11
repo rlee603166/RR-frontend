@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import "./styles/SwingView.css";
+import "../styles/SwingView.css";
 
 function SwingView({
     width,

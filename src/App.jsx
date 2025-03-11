@@ -1,77 +1,75 @@
-import Upload from './Upload'
-import { useEffect, useNavigate, useState } from 'react';
-import PoseView from './PoseView';
-import Landing from './Landing';
-import Playground from './Playground';
-import logo from './assets/logo.png';
-
-import './styles/index.css';
-
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Upload from "./components/Upload";
+import PoseView from "./components/PoseView";
+import Landing from "./components/Landing";
+import Playground from "./components/Playground";
+import Navbar from "./components/Navbar";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { AuthProvider } from "../contexts/AuthContext";
+import "./styles/index.css";
 
 function App() {
-  const [processID, setProcessID] = useState(null);
-  const [difference, setDifference] = useState(0);
-  const [fetchAble, setFetchAble] = useState(false);
+    const [processID, setProcessID] = useState(null);
+    const [difference, setDifference] = useState(0);
+    const [fetchAble, setFetchAble] = useState(false);
+    const [frontVideo, setFrontVideo] = useState(0);
+    const [backVideo, setBackVideo] = useState(0);
 
-  const [frontVideo, setFrontVideo] = useState(0);
-  const [backVideo, setBackVideo] = useState(0);
+    return (
+        <Router>
+            <AuthProvider>
+                <div className="app-container">
+                    <Navbar />
+                    <div className="content-container">
+                        <Routes>
+                            <Route path="/" element={<Landing />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/playground" element={<Playground />} />
 
-  const [playground, setPlayground] = useState(false);
+                            <Route
+                                path="/upload"
+                                element={
+                                    <ProtectedRoute>
+                                        <Upload
+                                            setProcessID={setProcessID}
+                                            setDifference={setDifference}
+                                            setBackVideo={setBackVideo}
+                                            setFrontVideo={setFrontVideo}
+                                            setFetchAble={setFetchAble}
+                                        />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-  const handleClick = () => {
-    setPlayground(true);
-  }
+                            <Route
+                                path="/analysis"
+                                element={
+                                    <ProtectedRoute>
+                                        <PoseView
+                                            frontVideo={frontVideo}
+                                            backVideo={backVideo}
+                                            processID={processID}
+                                            difference={difference}
+                                            fetchAble={fetchAble}
+                                            setFetchAble={setFetchAble}
+                                        />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-  const handleHome = () => {
-    // Reset the states to go back to the initial "home" screen
-    setPlayground(false);
-    setFetchAble(false);
-    setProcessID(null);
-    setDifference(0);
-    setFrontVideo(0);
-    setBackVideo(0);
-  };
+                            {/* You can add more protected routes here as needed */}
 
-  return (
-    <>
-      <div className="heading" >
-        <div className='logo-container' onClick={handleHome}>
-            <img className="logo" src={logo} />
-            <p className='title'>Rory Rater</p>
-        </div>
-        <div className='header-buttons'>
-          <button className="play-button" onClick={handleClick} >Playground</button>
-          <button className="upload-button" onClick={handleHome} >Home</button>
-        </div>
-      </div>
-      {!playground && (
-        !fetchAble ? (
-          <>
-            <Landing setPlayground={setPlayground} />
-            {/* <Upload 
-              setProcessID={setProcessID} 
-              setDifference={setDifference}
-              setBackVideo={setBackVideo}
-              setFrontVideo={setFrontVideo}
-              setFetchAble={setFetchAble}
-            /> */}
-          </>
-        ) : (
-          <PoseView 
-            frontVideo={frontVideo} 
-            backVideo={backVideo}
-            processID={processID}
-            difference={difference}
-            fetchAble={fetchAble}
-            setFetchAble={setFetchAble}
-          />
-        )
-      )}
-      {playground && (
-        <Playground setPlayground={setPlayground}/>
-      )}
-    </>
-  );
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                    </div>
+                </div>
+            </AuthProvider>
+        </Router>
+    );
 }
 
-export default App
+export default App;

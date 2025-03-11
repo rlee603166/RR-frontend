@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import SwingView from "./SwingView";
-import App from "./App";
-import './styles/Upload.css'
-import roryFront from './test-videos/rory-front.mp4'
-import roryBack from './test-videos/rory-back.mp4'
-import './styles/PoseView.css'
+import App from "../App";
+import '../styles/Upload.css'
+import roryFront from '../test-videos/rory-front.mp4'
+import roryBack from '../test-videos/rory-back.mp4'
+import '../styles/PoseView.css'
 
 function PoseView({ processID, roryID, difference, fetchAble, setFetchAble }) {
 
