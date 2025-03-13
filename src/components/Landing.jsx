@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import heroImage from "../assets/rory-front.png";
 import backgroundImage from "../assets/rory-back.jpg";
+import seanFront from "../assets/sean-front.gif";
+import seanBack from "../assets/sean-back.gif";
 import "../styles/Landing.css";
 import Upload from "./Upload";
 
@@ -12,16 +13,19 @@ function Landing() {
 
     return (
         <div className="landing-container">
-            {/* Hero Section */}
             <section className="hero-section">
+                <div className="hero-image-container">
+                    <img src={backgroundImage} alt="Golf course" className="hero-background" />
+                </div>
                 <div className="hero-content">
                     <h1 className="hero-title">
                         <span className="gradient-text">Perfect Your Swing</span>
                         <span className="with-ai">with AI Technology</span>
+                        <p className="hero-subtitle">
+                            Compare your golf swing with Rory McIlroy using advanced 3D pose
+                            detection
+                        </p>
                     </h1>
-                    <p className="hero-subtitle">
-                        Compare your golf swing with Rory McIlroy using advanced 3D pose detection
-                    </p>
                     <div className="hero-cta">
                         {currentUser ? (
                             <Link to="/upload" className="cta-button primary">
@@ -40,13 +44,7 @@ function Landing() {
                         </button>
                     </div>
                 </div>
-                <div className="hero-image-container">
-                    <img src={backgroundImage} alt="Golf course" className="hero-background" />
-                    <img src={heroImage} alt="Rory McIlroy" className="hero-foreground" />
-                </div>
             </section>
-
-            {/* How It Works Section */}
             <section className="how-it-works">
                 <h2 className="section-title">How It Works</h2>
                 <div className="steps-container">
@@ -54,11 +52,10 @@ function Landing() {
                         <div className="step-number">1</div>
                         <h3>Upload Your Swing</h3>
                         <p>Upload front and side view videos of your golf swing</p>
-                        <img
-                            src="/upload-preview.gif"
-                            alt="Upload process"
-                            className="step-image"
-                        />
+                        <div className="image-container">
+                            <img src={seanFront} className="step-image" />
+                            <img src={seanBack} className="step-image" />
+                        </div>
                     </div>
                     <div className="step">
                         <div className="step-number">2</div>
@@ -74,8 +71,6 @@ function Landing() {
                     </div>
                 </div>
             </section>
-
-            {/* Features Section */}
             <section className="features-section" id="features">
                 <h2 className="section-title">Advanced Features</h2>
                 <div className="features-grid">
@@ -101,9 +96,7 @@ function Landing() {
                     </div>
                 </div>
             </section>
-
-            {/* Testimonials Section */}
-            <section className="testimonials-section">
+            {/*   <section className="testimonials-section">
                 <h2 className="section-title">What Golfers Are Saying</h2>
                 <div className="testimonials-container">
                     <div className="testimonial-card">
@@ -128,9 +121,7 @@ function Landing() {
                         <div className="testimonial-author">- James K., Amateur Golfer</div>
                     </div>
                 </div>
-            </section>
-
-            {/* CTA Section */}
+            </section> */}
             <section className="cta-section">
                 <h2>Ready to Swing Like Rory?</h2>
                 <p>Join thousands of golfers improving their game with AI technology</p>
@@ -144,8 +135,6 @@ function Landing() {
                     </Link>
                 )}
             </section>
-
-            {/* Upload Section */}
             {currentUser && (
                 <section className="upload-section" id="upload">
                     <h2 className="section-title">Upload Your Swing</h2>

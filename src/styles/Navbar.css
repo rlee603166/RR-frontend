@@ -7,7 +7,14 @@
     z-index: 1000;
     transition: all 0.3s ease;
     padding: 15px 0;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Only make navbar transparent on landing page */
+.landing-page .navbar:not(.scrolled) {
     background: transparent;
+    box-shadow: none;
 }
 
 .navbar.scrolled {
@@ -37,26 +44,28 @@
 }
 
 .logo-text {
-    color: white;
+    color: #333;
     font-size: 1.5rem;
     font-weight: 700;
     transition: color 0.3s ease;
 }
 
-.scrolled .logo-text {
-    color: #333;
+/* White text only on landing page when not scrolled */
+.landing-page .navbar:not(.scrolled) .logo-text {
+    color: white;
 }
 
 .menu-icon {
     display: none;
-    color: white;
+    color: #333;
     font-size: 1.5rem;
     cursor: pointer;
     transition: color 0.3s ease;
 }
 
-.scrolled .menu-icon {
-    color: #333;
+/* White icon only on landing page when not scrolled */
+.landing-page .navbar:not(.scrolled) .menu-icon {
+    color: white;
 }
 
 .nav-menu {
@@ -73,7 +82,7 @@
 }
 
 .nav-link {
-    color: white;
+    color: #333;
     text-decoration: none;
     font-size: 1rem;
     font-weight: 500;
@@ -82,11 +91,13 @@
     transition: all 0.3s ease;
 }
 
-.scrolled .nav-link {
-    color: #333;
+/* White text only on landing page when not scrolled */
+.landing-page .navbar:not(.scrolled) .nav-link {
+    color: white;
 }
 
-.nav-link:after {
+/* Modified: Only apply the underline effect to non-signup links */
+.nav-link:not(.signup):after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -97,8 +108,8 @@
     transition: width 0.3s ease;
 }
 
-.nav-link:hover:after,
-.nav-link.active:after {
+.nav-link:not(.signup):hover:after,
+.nav-link:not(.signup).active:after {
     width: 100%;
 }
 
@@ -162,7 +173,7 @@
 }
 
 .user-name {
-    color: white;
+    color: #333;
     font-size: 0.9rem;
     max-width: 120px;
     white-space: nowrap;
@@ -171,8 +182,9 @@
     transition: color 0.3s ease;
 }
 
-.scrolled .user-name {
-    color: #333;
+/* White text only on landing page when not scrolled */
+.landing-page .navbar:not(.scrolled) .user-name {
+    color: white;
 }
 
 .dropdown-menu {

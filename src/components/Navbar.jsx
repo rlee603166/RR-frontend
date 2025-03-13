@@ -11,6 +11,9 @@ function Navbar() {
     const location = useLocation();
     const navigate = useNavigate();
 
+    // Check if current page is landing page
+    const isLandingPage = location.pathname === "/";
+
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
@@ -37,7 +40,9 @@ function Navbar() {
     };
 
     return (
-        <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
+        <nav
+            className={`navbar ${isScrolled ? "scrolled" : ""} ${isLandingPage ? "landing-page" : ""}`}
+        >
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
                     <img src={logo} alt="Rory Rater Logo" className="logo-image" />
