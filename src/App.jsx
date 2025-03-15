@@ -9,6 +9,7 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { AuthProvider } from "../contexts/AuthContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./styles/index.css";
 
 function App() {
@@ -19,36 +20,36 @@ function App() {
     const [backVideo, setBackVideo] = useState(0);
 
     return (
-        <Router>
-            <AuthProvider>
-                <div className="app-container">
-                    <Navbar />
-                    <div className="content-container">
-                        <Routes>
-                            <Route path="/" element={<Landing />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
-                            <Route path="/playground" element={<Playground />} />
+        <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+            <Router>
+                <AuthProvider>
+                    <div className="app-container">
+                        <Navbar />
+                        <div className="content-container">
+                            <Routes>
+                                <Route path="/" element={<Landing />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
+                                <Route path="/playground" element={<Playground />} />
 
-                            <Route
-                                path="/upload"
-                                element={
-                                    <ProtectedRoute>
-                                        <Upload
-                                            setProcessID={setProcessID}
-                                            setDifference={setDifference}
-                                            setBackVideo={setBackVideo}
-                                            setFrontVideo={setFrontVideo}
-                                            setFetchAble={setFetchAble}
-                                        />
-                                    </ProtectedRoute>
-                                }
-                            />
+                                <Route
+                                    path="/upload"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Upload
+                                                setProcessID={setProcessID}
+                                                setDifference={setDifference}
+                                                setBackVideo={setBackVideo}
+                                                setFrontVideo={setFrontVideo}
+                                                setFetchAble={setFetchAble}
+                                            />
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                            <Route
-                                path="/analysis"
-                                element={
-                                    <ProtectedRoute>
+                                <Route
+                                    path="/analysis"
+                                    element={
                                         <PoseView
                                             frontVideo={frontVideo}
                                             backVideo={backVideo}
@@ -57,18 +58,15 @@ function App() {
                                             fetchAble={fetchAble}
                                             setFetchAble={setFetchAble}
                                         />
-                                    </ProtectedRoute>
-                                }
-                            />
-
-                            {/* You can add more protected routes here as needed */}
-
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
+                                    }
+                                />
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </div>
                     </div>
-                </div>
-            </AuthProvider>
-        </Router>
+                </AuthProvider>
+            </Router>
+        </GoogleOAuthProvider>
     );
 }
 

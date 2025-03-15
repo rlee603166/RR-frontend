@@ -51,12 +51,7 @@ function Playground({ setPlayground }) {
                 difference={0}
                 isPlayground={false}
             />
-            <div className="controls">
-                <button className="reupload" onClick={handleClick}>
-                    Back
-                </button>
-            </div>
-        </div>
+       </div>
     );
 }
 

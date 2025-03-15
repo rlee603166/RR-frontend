@@ -21,6 +21,7 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
     const [open, setOpen] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [analysisStage, setAnalysisStage] = useState("");
+    const [error, setError] = useState("");
 
     const frontVideoRef = useRef(null);
     const backVideoRef = useRef(null);
@@ -30,7 +31,7 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
     const { currentUser } = useAuth();
     const navigate = useNavigate();
 
-    const url = "http://127.0.0.1:5000/";
+    const url = "http://127.0.0.1:5000/api/v1/";
 
     const handleFrontFileChange = e => {
         const file = e.target.files[0];
@@ -126,6 +127,7 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
         setBackTime(0);
         setFrontSlider(false);
         setBackSlider(false);
+        setError("");
 
         if (frontVideoRef.current) {
             frontVideoRef.current.src = "";
@@ -153,6 +155,7 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
     const simulateAnalysisStages = () => {
         const stages = [
             "Uploading videos...",
+            "Converting to GIF format...",
             "Analyzing front swing...",
             "Analyzing back swing...",
             "Detecting key points...",
@@ -175,12 +178,28 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
         return () => clearInterval(interval);
     };
 
+    const validateInputs = () => {
+        if (!front || !back) {
+            setError("Please select both front and back view videos!");
+            return false;
+        }
+
+        if (frontTime <= 0 || backTime <= 0) {
+            setError("Please select impact moments for both videos!");
+            return false;
+        }
+
+        // Clear any previous errors
+        setError("");
+        return true;
+    };
+
     const handleSubmit = async () => {
-        let upload_url = url + "upload";
-        if (!front && !back) {
-            alert("Please select both front and back view videos!");
+        if (!validateInputs()) {
             return;
         }
+
+        let upload_url = url + "predict";
 
         if (setDifference) setDifference(frontTime - backTime);
         handleOpen();
@@ -193,10 +212,10 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
         formData.append("file", back);
         formData.append("front_impact_time", frontTime / frontDuration);
         formData.append("back_impact_time", backTime / backDuration);
+        formData.append("front_duration", frontDuration);
+        formData.append("back_duration", backDuration);
         formData.append("user_id", currentUser?.uid || "anonymous");
         saveToLocal();
-
-        if (setDifference) setDifference(frontTime - backTime);
 
         try {
             const response = await fetch(upload_url, {
@@ -206,10 +225,14 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data.process_id);
+                console.log("Process ID:", data.process_id);
+
                 if (setProcessID) setProcessID(data.process_id);
-                handleClose();
+                if (setFrontVideo) setFrontVideo(frontURL);
+                if (setBackVideo) setBackVideo(backURL);
                 if (setFetchAble) setFetchAble(true);
+
+                handleClose();
 
                 // Navigate to analysis page if used independently
                 if (!setProcessID) {
@@ -223,12 +246,13 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
                     });
                 }
             } else {
-                alert("File upload failed. Please try again.");
+                const errorData = await response.json();
+                setError(errorData.error || "File upload failed. Please try again.");
                 handleClose();
             }
         } catch (error) {
-            console.log(error);
-            alert("Error uploading file. Please check your connection and try again.");
+            console.error("Upload error:", error);
+            setError("Error uploading files. Please check your connection and try again.");
             handleClose();
         }
 
@@ -239,6 +263,8 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
     const saveToLocal = () => {
         localStorage.setItem("frontUrl", frontURL);
         localStorage.setItem("backUrl", backURL);
+        localStorage.setItem("frontTime", frontTime);
+        localStorage.setItem("backTime", backTime);
     };
 
     const handleClose = () => {
@@ -261,9 +287,19 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
                             <video
                                 ref={frontVideoRef}
                                 src={frontURL}
+                                onLoadedMetadata={() => {
+                                    if (frontVideoRef.current) {
+                                        setFrontDuration(frontVideoRef.current.duration);
+                                        console.log(
+                                            "Front video duration:",
+                                            frontVideoRef.current.duration
+                                        );
+                                    }
+                                }}
                                 onTimeUpdate={handleFrontTimeUpdate}
                                 onClick={toggleFrontPlay}
                                 muted
+                                preload="metadata"
                             ></video>
                         ) : (
                             <div className="upload-placeholder">
@@ -284,7 +320,6 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
                         <label htmlFor="front-video" className="file-label">
                             {frontURL ? "Change Video" : "Select Video"}
                         </label>
-
                         {frontURL && frontDuration > 0 && (
                             <div className="time-slider">
                                 <div className="time-label">Select impact moment:</div>
@@ -311,9 +346,19 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
                             <video
                                 ref={backVideoRef}
                                 src={backURL}
+                                onLoadedMetadata={() => {
+                                    if (backVideoRef.current) {
+                                        setBackDuration(backVideoRef.current.duration);
+                                        console.log(
+                                            "Back video duration:",
+                                            backVideoRef.current.duration
+                                        );
+                                    }
+                                }}
                                 onTimeUpdate={handleBackTimeUpdate}
                                 onClick={toggleBackPlay}
                                 muted
+                                preload="metadata"
                             ></video>
                         ) : (
                             <div className="upload-placeholder">
@@ -334,7 +379,6 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
                         <label htmlFor="back-video" className="file-label">
                             {backURL ? "Change Video" : "Select Video"}
                         </label>
-
                         {backURL && backDuration > 0 && (
                             <div className="time-slider">
                                 <div className="time-label">Select impact moment:</div>
@@ -354,6 +398,12 @@ function Upload({ setProcessID, setDifference, setBackVideo, setFrontVideo, setF
                     </div>
                 </div>
             </div>
+
+            {error && (
+                <div className="upload-error">
+                    <p>{error}</p>
+                </div>
+            )}
 
             <div className="upload-instructions">
                 <h3>How to get the best results:</h3>

@@ -121,7 +121,7 @@ function Landing() {
                         <div className="testimonial-author">- James K., Amateur Golfer</div>
                     </div>
                 </div>
-            </section> */}
+            </section> 
             <section className="cta-section">
                 <h2>Ready to Swing Like Rory?</h2>
                 <p>Join thousands of golfers improving their game with AI technology</p>
@@ -134,13 +134,13 @@ function Landing() {
                         Sign Up For Free
                     </Link>
                 )}
+            </section> */}
+            {/*{currentUser && (*/}
+            <section className="upload-section" id="upload">
+                <h2 className="section-title">Upload Your Swing</h2>
+                <Upload />
             </section>
-            {currentUser && (
-                <section className="upload-section" id="upload">
-                    <h2 className="section-title">Upload Your Swing</h2>
-                    <Upload />
-                </section>
-            )}
+            {/*)}*/}
         </div>
     );
 }
